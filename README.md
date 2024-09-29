@@ -12,7 +12,7 @@ No se necesitan otras dependencias del sistema, ya que todo se ejecuta dentro de
 ## Estructura del proyecto
 
 ```
-proyecto/
+poc_kafka_go_ruby/
 ├── docker-compose.yml
 ├── publisher/
 │   ├── Dockerfile
@@ -30,7 +30,7 @@ proyecto/
 1. Clona este repositorio:
    ```
    git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_DIRECTORIO>
+   cd poc_kafka_go_ruby
    ```
 
 2. Inicia los servicios con Docker Compose:
@@ -38,7 +38,7 @@ proyecto/
    docker-compose up -d --build
    ```
 
-   Esto iniciará Zookeeper, Kafka, el publicador y dos suscriptores.
+   Esto iniciará Zookeeper, Kafka, Kafdrop, el publicador y dos suscriptores.
 
 3. Verifica que todos los servicios estén en ejecución:
    ```
@@ -58,26 +58,26 @@ proyecto/
 
    Para el subscriber1:
    ```
-   docker exec -it proyecto_subscriber1_1 cat /app/received_messages_subscriber1.txt
+   docker exec -it poc_kafka_go_ruby_subscriber1_1 cat /app/received_messages_subscriber1.txt
    ```
 
    Para el subscriber2:
    ```
-   docker exec -it proyecto_subscriber2_1 cat /app/received_messages_subscriber2.txt
+   docker exec -it poc_kafka_go_ruby_subscriber2_1 cat /app/received_messages_subscriber2.txt
    ```
 
-   Nota: Reemplaza `proyecto_subscriber1_1` y `proyecto_subscriber2_1` con los nombres reales de tus contenedores si son diferentes.
+   Nota: Reemplaza `poc_kafka_go_ruby_subscriber1_1` y `poc_kafka_go_ruby_subscriber2_1` con los nombres reales de tus contenedores si son diferentes.
 
 6. Para ver los mensajes en tiempo real a medida que llegan:
 
    Para el subscriber1:
    ```
-   docker exec -it proyecto_subscriber1_1 tail -f /app/received_messages_subscriber1.txt
+   docker exec -it poc_kafka_go_ruby_subscriber1_1 tail -f /app/received_messages_subscriber1.txt
    ```
 
    Para el subscriber2:
    ```
-   docker exec -it proyecto_subscriber2_1 tail -f /app/received_messages_subscriber2.txt
+   docker exec -it poc_kafka_go_ruby_subscriber2_1 tail -f /app/received_messages_subscriber2.txt
    ```
 
 ## Detener el proyecto
@@ -98,6 +98,7 @@ docker-compose down
   ```
   docker-compose up --build -d
   ```
+- Si tienes problemas para visualizar los tópicos en Kafdrop, verifica que el servicio esté en ejecución con `docker-compose ps` y revisa sus logs con `docker-compose logs kafdrop`
 
 ## Notas adicionales
 
