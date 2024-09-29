@@ -1,0 +1,81 @@
+networks:
+  kafka-net:
+    driver: bridge
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - kafka-net
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    networks:
+      - kafka-net
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+      SERVER_SERVLET_CONTEXTPATH: "/"
+    depends_on:
+      - kafka
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - kafka-net
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # KAFKA_LOG_RETENTION_MS: 60000  # Esta configuración limita la retención de mensajes a 60 segundos
+      # KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 30000  # Esta configuración verifica la retención cada 30 segundos
+      # Nota: Kafka mantiene los datos persistentes por defecto. Las configuraciones anteriores
+      # limitaban la retención de mensajes, lo cual no es típico en un entorno de producción.
+      # Si se desea persistencia a largo plazo, se pueden comentar o eliminar estas líneas.
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  subscriber1:
+    build: ./subscriber
+    networks:
+      - kafka-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      INSTANCE: subscriber1
+      KAFKA_BROKER: kafka:9092
+
+  subscriber2:
+    build: ./subscriber
+    networks:
+      - kafka-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      INSTANCE: subscriber2
+      KAFKA_BROKER: kafka:9092
+
+  publisher:
+    build: ./publisher
+    networks:
+      - kafka-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
