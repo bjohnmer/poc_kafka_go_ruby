@@ -97,21 +97,39 @@ Esto iniciará Zookeeper, Kafka, Kafdrop, el publicador y dos suscriptores.
 
 Una vez que los servicios estén en ejecución, puedes continuar con los siguientes pasos:
 
-1. Verifica que todos los servicios estén en ejecución:
+1. Cambia al directorio del publicador:
+   ```
+   cd publisher
+   ```
+2. Habilita la version de Go dependiendo de tu arquitectura:
+
+   #### AMD64
+   ```go
+   go 1.23.1 // Para AMD64
+   // go 1.20 // Para ARM64
+   ```
+
+   #### ARM64
+   ```go
+   // go 1.23.1 // Para AMD64
+   go 1.20 // Para ARM64
+   ```
+
+3. Verifica que todos los servicios estén en ejecución:
    ```
    docker-compose ps
    ```
 
    Deberías ver todos los servicios en estado "Up".
 
-2. Para ejecutar el publicador y enviar mensajes:
+4. Para ejecutar el publicador y enviar mensajes:
    ```
    docker-compose exec publisher ./publisher
    ```
 
    Sigue las instrucciones en pantalla para enviar mensajes a los suscriptores.
 
-3. Para verificar la recepción de mensajes en los suscriptores, puedes revisar los archivos de salida:
+5. Para verificar la recepción de mensajes en los suscriptores, puedes revisar los archivos de salida:
 
    Para el subscriber1:
    ```
@@ -125,7 +143,7 @@ Una vez que los servicios estén en ejecución, puedes continuar con los siguien
 
    Nota: Reemplaza `poc_kafka_go_ruby_subscriber1_1` y `poc_kafka_go_ruby_subscriber2_1` con los nombres reales de tus contenedores si son diferentes.
 
-4. Para ver los mensajes en tiempo real a medida que llegan:
+6. Para ver los mensajes en tiempo real a medida que llegan:
 
    Para el subscriber1:
    ```
