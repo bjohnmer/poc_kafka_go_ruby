@@ -1,0 +1,54 @@
+# Usa la plataforma de construcción
+FROM --platform=$BUILDPLATFORM golang:1.20-alpine AS builder
+
+# Argumentos para determinar la plataforma de destino
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+WORKDIR /app
+
+# Instalar herramientas comunes
+RUN apk add --no-cache gcc g++ make musl-dev git bash perl python3 curl pkgconfig
+
+# Instalar herramientas específicas según la arquitectura
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        echo "Instalando herramientas para ARM64"; \
+    elif [ "$TARGETARCH" = "amd64" ]; then \
+        echo "Instalando herramientas para AMD64"; \
+    fi
+
+# Compilar librdkafka
+RUN curl -L https://github.com/edenhill/librdkafka/archive/refs/tags/v1.9.2.tar.gz | tar xzf - \
+    && cd librdkafka-1.9.2 \
+    && ./configure \
+    && make \
+    && make install
+
+# Copiar los archivos del proyecto
+COPY . .
+
+# Configurar variables de entorno
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV CGO_LDFLAGS="-L/usr/local/lib -lrdkafka"
+ENV CGO_CFLAGS="-I/usr/local/include"
+
+# Descargar dependencias
+RUN go mod download && go mod tidy
+
+# Construir la aplicación
+RUN CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -tags musl -o publisher
+
+# Imagen final
+FROM alpine:latest
+
+WORKDIR /root/
+
+COPY --from=builder /usr/local/lib/librdkafka* /usr/local/lib/
+COPY --from=builder /app/publisher .
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
+CMD ["./publisher"]

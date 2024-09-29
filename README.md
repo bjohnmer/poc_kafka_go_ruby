@@ -45,36 +45,73 @@ graph LR
 
 Este diseño permite una comunicación asíncrona y desacoplada entre el publicador y el suscriptor, proporcionando escalabilidad y resistencia a fallos.
 
+## Clona este repositorio:
+```
+git clone git@github.com:bjohnmer/poc_kafka_go_ruby.git
+cd poc_kafka_go_ruby
+```
+
+## Arrancar contenedores
+
+Este proyecto soporta múltiples arquitecturas (amd64 y arm64). Hay varias formas de ejecutar el proyecto dependiendo de tu arquitectura y preferencias.
+
+### Opción 1: Detección automática de arquitectura
+
+Puedes usar el script `run-docker-compose.sh` que detectará automáticamente la arquitectura de tu sistema y usará el Dockerfile apropiado.
+
+1. Dale permisos de ejecución al script:
+   ```
+   chmod +x run-docker-compose.sh
+   ```
+
+2. Ejecuta el script:
+   ```
+   ./run-docker-compose.sh
+   ```
+
+### Opción 2: Especificar manualmente la arquitectura
+
+Si prefieres especificar manualmente la arquitectura, puedes usar uno de los siguientes comandos:
+
+Para arquitecturas AMD64 (x86_64):
+```
+DOCKERFILE=Dockerfile.amd64 docker-compose up --build -d
+```
+
+Para arquitecturas ARM64:
+```
+DOCKERFILE=Dockerfile.arm64 docker-compose up --build -d
+```
+
+### Opción 3: Usar el Dockerfile por defecto
+
+Si no especificas un Dockerfile, se usará `Dockerfile.amd64` por defecto:
+
+```
+docker-compose up -d --build
+```
+
+Esto iniciará Zookeeper, Kafka, Kafdrop, el publicador y dos suscriptores.
+
 ## Instrucciones de ejecución
 
-1. Clona este repositorio:
-   ```
-   git clone <URL_DEL_REPOSITORIO>
-   cd poc_kafka_go_ruby
-   ```
+Una vez que los servicios estén en ejecución, puedes continuar con los siguientes pasos:
 
-2. Inicia los servicios con Docker Compose:
-   ```
-   docker-compose up -d --build
-   ```
-
-   Esto iniciará Zookeeper, Kafka, Kafdrop, el publicador y dos suscriptores.
-
-3. Verifica que todos los servicios estén en ejecución:
+1. Verifica que todos los servicios estén en ejecución:
    ```
    docker-compose ps
    ```
 
    Deberías ver todos los servicios en estado "Up".
 
-4. Para ejecutar el publicador y enviar mensajes:
+2. Para ejecutar el publicador y enviar mensajes:
    ```
    docker-compose exec publisher ./publisher
    ```
 
    Sigue las instrucciones en pantalla para enviar mensajes a los suscriptores.
 
-5. Para verificar la recepción de mensajes en los suscriptores, puedes revisar los archivos de salida:
+3. Para verificar la recepción de mensajes en los suscriptores, puedes revisar los archivos de salida:
 
    Para el subscriber1:
    ```
@@ -88,7 +125,7 @@ Este diseño permite una comunicación asíncrona y desacoplada entre el publica
 
    Nota: Reemplaza `poc_kafka_go_ruby_subscriber1_1` y `poc_kafka_go_ruby_subscriber2_1` con los nombres reales de tus contenedores si son diferentes.
 
-6. Para ver los mensajes en tiempo real a medida que llegan:
+4. Para ver los mensajes en tiempo real a medida que llegan:
 
    Para el subscriber1:
    ```
