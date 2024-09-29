@@ -25,6 +25,26 @@ poc_kafka_go_ruby/
 └── README.md
 ```
 
+## Arquitectura del Sistema
+
+El sistema consta de un publicador y un suscriptor que se comunican a través de Kafka. A continuación se muestra un diagrama simplificado de la arquitectura:
+
+```mermaid
+graph LR
+    A[Publicador] -->|Publica mensajes| B((Kafka))
+    B -->|Consume mensajes| C[Suscriptor]
+    C -->|Escribe mensajes| D[(Archivo de salida)]
+```
+
+### Flujo de datos:
+
+1. El Publicador genera mensajes y los envía a un tema específico en Kafka.
+2. Kafka actúa como intermediario, almacenando los mensajes publicados.
+3. El Suscriptor se conecta a Kafka y consume los mensajes del tema especificado.
+4. El Suscriptor escribe los mensajes recibidos en un archivo de salida.
+
+Este diseño permite una comunicación asíncrona y desacoplada entre el publicador y el suscriptor, proporcionando escalabilidad y resistencia a fallos.
+
 ## Instrucciones de ejecución
 
 1. Clona este repositorio:
