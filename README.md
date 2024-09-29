@@ -32,8 +32,10 @@ El sistema consta de un publicador y un suscriptor que se comunican a través de
 ```mermaid
 graph LR
     A[Publicador] -->|Publica mensajes| B((Kafka))
-    B -->|Consume mensajes| C[Suscriptor]
-    C -->|Escribe mensajes| D[(Archivo de salida)]
+    B -->|Consume mensajes| C1[Suscriptor 1]
+    B -->|Consume mensajes| C2[Suscriptor 2]
+    C1 -->|Escribe mensajes| D1[(Archivo de salida 1)]
+    C2 -->|Escribe mensajes| D2[(Archivo de salida 2)]
 ```
 
 ### Flujo de datos:
